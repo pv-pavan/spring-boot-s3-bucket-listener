@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+app:
+  s3-data: /tmp/
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
