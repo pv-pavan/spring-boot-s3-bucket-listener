@@ -5,7 +5,6 @@ import java.util.List;
 import com.amazonaws.services.s3.event.S3EventNotification;
 import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ public class S3ListenerApplication {
     QueueMessagingTemplate queueMessagingTemplate;
 
     public static void main(String[] args) {
-        log.debug("Running app");
         SpringApplication.run(S3ListenerApplication.class, args);
     }
 
@@ -41,14 +39,14 @@ public class S3ListenerApplication {
         S3EventNotification s3Event = null;
         try {
             s3Event = objectMapper.readValue(event, S3EventNotification.class);
-        } catch (JsonMappingException e) {
-            log.error(e.getMessage(), e);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
-        }
+            return null;
+        } 
+
         List<S3EventNotificationRecord> records = s3Event.getRecords();
         //Assume event has only one record
-        if(records.size()<=0) return "";
+        if(records.isEmpty()) return "";
         S3EventNotificationRecord r = records.get(0);
         String region = r.getAwsRegion(); //Assume region is not default, the S3 URL is different for us-east-1
         String bucketName = r.getS3().getBucket().getName();
